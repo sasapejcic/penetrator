@@ -12,11 +12,13 @@ bgUp = []
 bgDown = []
 minPassage = 200
 maxPassage = 300
+enemy = []
 
 def FirstborderGenerator():
     for i in range(20):
         bgUp.append(20)
         bgDown.append(H-20)
+        enemy.append(0)
     for i in range(20,80):
         BorderGenerator(bgUp[-1], bgDown[-1])
 
@@ -30,18 +32,30 @@ def BorderGenerator(a, b):
         bgUp.append(a+x)
 
     x = randint(-50, 50)
+    y = randint(0,100)
     if b+x>H-20:
-        bgDown.append(H-20)
+        pos = H-20
     elif b+x<a+minPassage:
-            bgDown.append(a+minPassage)
+        pos = a+minPassage
     else:
-        bgDown.append(b+x)
+        pos = b+x
+    bgDown.append(pos)
+
+    y = randint(0,100)
+    if y>90:
+        enemy.append(pos)
+    else:
+        enemy.append(0)
+
 
 def collision():
+    col = False
     if abs(playerY-bgUp[playerX//10])<radius or abs(playerY-bgDown[playerX//10])<radius:
-        return True
-    else:
-        return False
+        col =  True
+    for i in range(len(enemy)-20):
+        if (enemy[i]-playerY)**2+(i*10-playerX)**2<(radius+10)**2:
+            col = True
+    return col
 
 
 def redrawWindow():
@@ -60,11 +74,16 @@ def redrawWindow():
     pygame.draw.polygon(win, pygame.Color("white"), temenaUp, 5)
     pygame.draw.polygon(win, pygame.Color("white"), temenaDown, 5)
     pygame.draw.circle(win, pygame.Color("green"), (playerX, playerY), radius)
+    for i in range(len(enemy)):
+        if enemy[i]!=0:
+            pygame.draw.circle(win, pygame.Color("red"), (i*10, enemy[i]), 10)
 
-    font = pygame.font.SysFont("Arial", 20)
+    font = pygame.font.SysFont("Arial", 50)
     tekst = font.render(str(counter), True, pygame.Color("yellow"))
     win.blit(tekst, (0, 0))
     pygame.display.update()
+
+
 
 run = True
 speed = 30
@@ -86,6 +105,7 @@ while run:
 
     bgUp = bgUp[1:]
     bgDown = bgDown[1:]
+    enemy = enemy[1:]
     BorderGenerator(bgUp[-1], bgDown[-1])
 
     for event in pygame.event.get():
@@ -120,7 +140,12 @@ while run:
         dx = 0
     playerY += dy
 
-    if collision():
-        run = False
+    for i in range(len(enemy)):
+        if enemy[i]!=0:
+            enemy[i] -= 1
 
     redrawWindow()
+
+    if collision():
+        run = False
+        print(counter)
