@@ -14,33 +14,33 @@ fps = 27
 probability = 100
 missile_speed = 3
 
-bgUp = []
-bgDown = []
 minPassage = 200
 maxPassage = 300
+
+bgUp = []
+bgDown = []
 enemy = []
 
 def FirstborderGenerator():
-    for i in range(20):
-        bgUp.append(20)
-        bgDown.append(H-20)
+    for i in range(W//10):
+        bgUp.append(H//30)
+        bgDown.append(H-H//30)
         enemy.append(0)
-    for i in range(20,80):
-        BorderGenerator(bgUp[-1], bgDown[-1])
+
 
 def BorderGenerator(a, b):
-    x = randint(-50, 50)
-    if a+x<20:
-        bgUp.append(20)
+    x = randint(-H//20, H//20)
+    if a+x<H//30:
+        bgUp.append(H//30)
     elif a+x>b-minPassage:
         bgUp.append(b-minPassage)
     else:
         bgUp.append(a+x)
 
-    x = randint(-50, 50)
+    x = randint(-H//20, H//20)
     y = randint(0,100)
-    if b+x>H-20:
-        pos = H-20
+    if b+x>H-H//30:
+        pos = H-H//30
     elif b+x<a+minPassage:
         pos = a+minPassage
     else:
@@ -58,7 +58,7 @@ def collision():
     col = False
     if abs(playerY-bgUp[playerX//10])<radius or abs(playerY-bgDown[playerX//10])<radius:
         col =  True
-    for i in range(len(enemy)-20):
+    for i in range(len(enemy)):
         if (enemy[i]-playerY)**2+(i*10-playerX)**2<(radius+10)**2:
             col = True
     return col
@@ -99,6 +99,7 @@ playerY = H//2
 dx = 0
 dy = 0
 radius = 20
+velocity = 10
 
 clock = pygame.time.Clock()
 
@@ -121,13 +122,13 @@ while run:
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_UP or event.key == pygame.K_w:
-                dy = -10
+                dy = -1*velocity
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                dy = 10
+                dy = velocity
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                dx = -10
+                dx = -1*velocity
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                dx = 10
+                dx = velocity
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP or event.key == pygame.K_w:
