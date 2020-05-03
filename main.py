@@ -11,7 +11,7 @@ pygame.display.set_caption('Penetrator')
 
 fps = 27
 probability = 50
-missile_speed = 3
+missile_speed = 5
 radar_range = H//3
 
 minPassage = 200
@@ -47,6 +47,7 @@ def BorderGenerator(a, b):
         enemy.append(pos)
     else:
         enemy.append(0)
+    enemy_fired.append(0)
 
 
 def collision():
@@ -105,6 +106,7 @@ while run:
     bgUp = bgUp[1:]
     bgDown = bgDown[1:]
     enemy = enemy[1:]
+    enemy_fired = enemy_fired[1:]
     BorderGenerator(bgUp[-1], bgDown[-1])
 
     for event in pygame.event.get():
@@ -143,9 +145,13 @@ while run:
     playerY += dy
 
     for i in range(len(enemy)):
-        if enemy[i]!=0:
-            if (velocity*abs(playerY-enemy[i])<(missile_speed)*abs(i*10-playerX)):
-                enemy[i] -= missile_speed
+        if enemy_fired[i]!=0:
+            enemy[i] -= missile_speed
+        elif (velocity*abs(playerY-enemy[i])>(missile_speed)*abs(i*10-playerX)-radius):
+            enemy_fired[i] = 1
+        elif playerX+2*radius>i*velocity:
+            enemy_fired[i] = 1
+
 
     redrawWindow()
 
